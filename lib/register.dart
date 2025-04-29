@@ -99,7 +99,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     // Determinar si estamos en una pantalla ancha (web/tablet) o móvil
     final screenWidth = MediaQuery.of(context).size.width;
     final isWideScreen = screenWidth > 600;
-    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Registro'),
@@ -133,11 +133,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     Text(
                       'Crear cuenta en MediControl',
                       textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).primaryColor,
-                            fontSize: isWideScreen ? 28 : 22,
-                          ),
+                      style:
+                          Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).primaryColor,
+                                fontSize: isWideScreen ? 28 : 22,
+                              ),
                     ),
 
                     const SizedBox(height: 32),
@@ -231,7 +232,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         padding: const EdgeInsets.only(top: 16.0),
                         child: Text(
                           _errorMessage!,
-                          style: TextStyle(color: Theme.of(context).colorScheme.error),
+                          style: TextStyle(
+                              color: Theme.of(context).colorScheme.error),
                           textAlign: TextAlign.center,
                         ),
                       ),
@@ -259,7 +261,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 color: Colors.white,
                               ),
                             )
-                          : const Text('Registrarse', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                          : const Text('Registrarse',
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold)),
                     ),
 
                     const SizedBox(height: 16),
@@ -272,7 +276,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         style: TextButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 12),
                         ),
-                        child: const Text('¿Ya tienes cuenta? Inicia sesión', style: TextStyle(fontSize: 16)),
+                        child: const Text('¿Ya tienes cuenta? Inicia sesión',
+                            style: TextStyle(fontSize: 16)),
                       ),
                     ),
 

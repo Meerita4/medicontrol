@@ -62,11 +62,12 @@ class SplashScreen extends StatelessWidget {
                     const SizedBox(height: 40),
                     Text(
                       'Bienvenido a MediControl',
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.blue.shade900,
-                            fontSize: isWideScreen ? 32 : 24,
-                          ),
+                      style:
+                          Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.blue.shade900,
+                                fontSize: isWideScreen ? 32 : 24,
+                              ),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 20),

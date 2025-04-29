@@ -13,8 +13,8 @@ Future<void> main() async {
 
   // Initialize Supabase
   await Supabase.initialize(
-    url: dotenv.env['SUPABASE_URL']!,
-    anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
+    url: 'https://mwhuegkdrfqvuagrxlmb.supabase.co',
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im13aHVlZ2tkcmZxdnVhZ3J4bG1iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDUzOTEwMDUsImV4cCI6MjA2MDk2NzAwNX0.1V1G4ArJqcaPz_s5gh3uvDFKscGysYADIJ_fxoc7YrE'
   );
 
   runApp(const MyApp());

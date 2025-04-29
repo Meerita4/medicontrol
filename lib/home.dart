@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:medicontrol/main.dart';
+import 'package:intl/intl.dart';
+import 'package:medicontrol/medicamentos.dart'; // Importamos la pantalla de medicamentos
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -33,41 +35,15 @@ class _HomePageState extends State<HomePage> {
         return;
       }
 
-      // Intentar obtener los datos de perfil desde varias fuentes
+      // Usar el email como nombre de usuario por defecto
       String name = '';
 
-      try {
-        // Método 1: Obtener desde la tabla profiles
-        final profileData = await supabase
-            .from('profiles')
-            .select('name, email')
-            .eq('id', currentUser.id)
-            .single();
-
-        if (profileData != null &&
-            profileData['name'] != null &&
-            profileData['name'].toString().isNotEmpty) {
-          name = profileData['name'];
-        }
-      } catch (e) {
-        // Si falla, continuamos con los otros métodos
-        print("Error obteniendo perfil desde tabla profiles: $e");
-      }
-
-      // Método 2: Si el nombre sigue vacío, intentar obtener desde los datos del usuario
-      if (name.isEmpty && currentUser.userMetadata != null) {
+      // Método 1: Intentar obtener desde los metadatos del usuario
+      if (currentUser.userMetadata != null) {
         name = currentUser.userMetadata!['name'] ?? '';
       }
 
-      // Método 3: Si aún está vacío, intentar obtener desde el objeto de autenticación
-      if (name.isEmpty) {
-        final userData = await supabase.auth.getUser();
-        if (userData.user != null && userData.user!.userMetadata != null) {
-          name = userData.user!.userMetadata!['name'] ?? '';
-        }
-      }
-
-      // Método 4: Si todo falla, usar el email como último recurso
+      // Método 2: Si aún está vacío, usar el email como último recurso
       if (name.isEmpty && currentUser.email != null) {
         // Extraer solo la parte antes del @ del email como un nombre
         name = currentUser.email!.split('@')[0];
@@ -185,7 +161,13 @@ class _HomePageState extends State<HomePage> {
                               'Mis Medicamentos',
                               Icons.medication,
                               () {
-                                // Navegación a la pantalla de medicamentos (por implementar)
+                                // Navegación a la pantalla de medicamentos
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const MedicamentosScreen(),
+                                  ),
+                                );
                               },
                             ),
                             _buildFeatureCard(
@@ -269,6 +251,96 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+// Nueva clase HomeScreen
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({Key? key}) : super(key: key);
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final supabase = Supabase.instance.client;
+  List<dynamic> medicamentos = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _cargarMedicamentos();
+  }
+
+  Future<void> _cargarMedicamentos() async {
+    final user = supabase.auth.currentUser;
+    final today = DateFormat('HH:mm').format(DateTime.now());
+
+    final response = await supabase
+        .from('medicamentos')
+        .select()
+        .eq('usuario_id', user!.id)
+        .order('hora', ascending: true);
+
+    setState(() {
+      medicamentos = response;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final nombreUsuario =
+        Supabase.instance.client.auth.currentUser?.email ?? 'Usuario';
+
+    return Scaffold(
+      appBar: AppBar(title: const Text("MediControl")),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("👋 Hola, $nombreUsuario", style: TextStyle(fontSize: 22)),
+            Text(
+                "📅 Hoy es ${DateFormat('EEEE, d MMMM', 'es_ES').format(DateTime.now())}",
+                style: TextStyle(color: Colors.grey)),
+            const SizedBox(height: 20),
+            if (medicamentos.isNotEmpty) ...[
+              Text("🔔 Próxima toma:", style: TextStyle(fontSize: 18)),
+              Card(
+                child: ListTile(
+                  title: Text(medicamentos.first['nombre']),
+                  subtitle: Text("Dosis: ${medicamentos.first['dosis']} - "
+                      "Hora: ${medicamentos.first['hora']}"),
+                ),
+              ),
+            ] else ...[
+              Text("No hay medicamentos registrados para hoy."),
+            ],
+            const SizedBox(height: 20),
+            Text("💊 Medicamentos de hoy:", style: TextStyle(fontSize: 18)),
+            Expanded(
+              child: ListView.builder(
+                itemCount: medicamentos.length,
+                itemBuilder: (context, index) {
+                  final m = medicamentos[index];
+                  return ListTile(
+                    leading: Icon(Icons.medication),
+                    title: Text("${m['nombre']} - ${m['dosis']}"),
+                    subtitle: Text("⏰ ${m['hora']}"),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Aquí puedes navegar a pantalla de añadir medicamento
+        },
+        child: Icon(Icons.add),
       ),
     );
   }

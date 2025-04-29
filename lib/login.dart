@@ -130,7 +130,7 @@ class _LoginScreenState extends State<LoginScreen> {
     // Determinar si estamos en una pantalla ancha (web/tablet) o estrecha (móvil)
     final screenWidth = MediaQuery.of(context).size.width;
     final isWideScreen = screenWidth > 600;
-    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Iniciar Sesión'),
@@ -165,11 +165,12 @@ class _LoginScreenState extends State<LoginScreen> {
                     Text(
                       'MediControl',
                       textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).primaryColor,
-                            fontSize: isWideScreen ? 32 : 24,
-                          ),
+                      style:
+                          Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).primaryColor,
+                                fontSize: isWideScreen ? 32 : 24,
+                              ),
                     ),
 
                     const SizedBox(height: 32),
@@ -219,7 +220,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         padding: const EdgeInsets.only(top: 8.0),
                         child: Text(
                           _errorMessage!,
-                          style: TextStyle(color: Theme.of(context).colorScheme.error),
+                          style: TextStyle(
+                              color: Theme.of(context).colorScheme.error),
                           textAlign: TextAlign.center,
                         ),
                       ),
@@ -247,7 +249,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                 color: Colors.white,
                               ),
                             )
-                          : const Text('Iniciar Sesión', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                          : const Text('Iniciar Sesión',
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold)),
                     ),
 
                     const SizedBox(height: 16),
@@ -260,7 +264,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         style: TextButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 12),
                         ),
-                        child: const Text('¿No tienes cuenta? Regístrate', style: TextStyle(fontSize: 16)),
+                        child: const Text('¿No tienes cuenta? Regístrate',
+                            style: TextStyle(fontSize: 16)),
                       ),
                     ),
 
@@ -274,7 +279,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         style: TextButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 12),
                         ),
-                        child: const Text('¿Olvidaste tu contraseña?', style: TextStyle(fontSize: 16)),
+                        child: const Text('¿Olvidaste tu contraseña?',
+                            style: TextStyle(fontSize: 16)),
                       ),
                     ),
                   ],
