@@ -3,7 +3,42 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:medicontrol/login.dart';
 import 'package:medicontrol/splash_screen.dart';
-import 'package:medicontrol/home.dart'; // Importamos nuestra página de inicio personalizada
+import 'package:medicontrol/home.dart';
+import 'package:medicontrol/medicamentos.dart';
+import 'package:medicontrol/add_medicamento.dart';
+import 'package:medicontrol/historial.dart';
+import 'package:medicontrol/perfil.dart';
+import 'package:medicontrol/register.dart';
+import 'package:medicontrol/ai_assistant.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+// Controlador de tema global
+class ThemeController with ChangeNotifier {
+  ThemeMode _themeMode = ThemeMode.system;
+
+  ThemeMode get themeMode => _themeMode;
+
+  ThemeController() {
+    _loadThemeMode();
+  }
+
+  void _loadThemeMode() async {
+    final prefs = await SharedPreferences.getInstance();
+    final themeModeIndex = prefs.getInt('theme_mode') ?? 0;
+    _themeMode = ThemeMode.values[themeModeIndex];
+    notifyListeners();
+  }
+
+  void setThemeMode(ThemeMode mode) async {
+    _themeMode = mode;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('theme_mode', mode.index);
+    notifyListeners();
+  }
+}
+
+// Instancia global del controlador de tema
+final themeController = ThemeController();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,9 +48,9 @@ Future<void> main() async {
 
   // Initialize Supabase
   await Supabase.initialize(
-    url: 'https://mwhuegkdrfqvuagrxlmb.supabase.co',
-    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im13aHVlZ2tkcmZxdnVhZ3J4bG1iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDUzOTEwMDUsImV4cCI6MjA2MDk2NzAwNX0.1V1G4ArJqcaPz_s5gh3uvDFKscGysYADIJ_fxoc7YrE'
-  );
+      url: 'https://mwhuegkdrfqvuagrxlmb.supabase.co',
+      anonKey:
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im13aHVlZ2tkcmZxdnVhZ3J4bG1iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDUzOTEwMDUsImV4cCI6MjA2MDk2NzAwNX0.1V1G4ArJqcaPz_s5gh3uvDFKscGysYADIJ_fxoc7YrE');
 
   runApp(const MyApp());
 }
@@ -28,20 +63,95 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'MediControl',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        useMaterial3: true,
-        primaryColor: Colors.blue,
-      ),
-      initialRoute: '/',
-      routes: {
-        '/': (context) => const SplashScreen(),
-        '/login': (context) => const LoginScreen(),
-        '/home': (context) =>
-            const HomePage(), // Usamos nuestra nueva página de inicio
+    // Definimos esquemas de color mejorados para ambos temas
+    final lightColorScheme = ColorScheme.fromSeed(
+      seedColor: Colors.blueAccent,
+      brightness: Brightness.light,
+    );
+
+    final darkColorScheme = ColorScheme.fromSeed(
+      seedColor: Colors.lightBlueAccent,
+      brightness: Brightness.dark,
+      primary: Colors.lightBlueAccent,
+      surface: const Color(0xFF1E1E1E),
+      background: const Color(0xFF121212),
+      onBackground:
+          Colors.white.withOpacity(0.9), // Texto claro sobre fondo oscuro
+      onSurface: Colors.white
+          .withOpacity(0.95), // Mejor contraste en superficies oscuras
+    );
+
+    return AnimatedBuilder(
+      animation: themeController,
+      builder: (context, _) {
+        return MaterialApp(
+          title: 'MediControl',
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+            colorScheme: lightColorScheme,
+            useMaterial3: true,
+            fontFamily: 'Montserrat',
+            brightness: Brightness.light,
+            // Configuraciones específicas para tema claro
+            textTheme: TextTheme(
+              bodyLarge: TextStyle(color: Colors.black87),
+              bodyMedium: TextStyle(color: Colors.black87),
+              displayLarge: TextStyle(color: Colors.black),
+              displayMedium: TextStyle(color: Colors.black),
+              displaySmall: TextStyle(color: Colors.black87),
+              titleLarge: TextStyle(color: Colors.black),
+            ),
+            cardTheme: CardTheme(
+              color: Colors.white,
+            ),
+            appBarTheme: AppBarTheme(
+              titleTextStyle: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold),
+              iconTheme: IconThemeData(color: Colors.white),
+            ),
+          ),
+          darkTheme: ThemeData(
+            colorScheme: darkColorScheme,
+            useMaterial3: true,
+            fontFamily: 'Montserrat',
+            brightness: Brightness.dark,
+            // Configuraciones específicas para tema oscuro
+            textTheme: TextTheme(
+              bodyLarge: TextStyle(color: Colors.white.withOpacity(0.9)),
+              bodyMedium: TextStyle(color: Colors.white.withOpacity(0.9)),
+              displayLarge: TextStyle(color: Colors.white),
+              displayMedium: TextStyle(color: Colors.white),
+              displaySmall: TextStyle(color: Colors.white.withOpacity(0.95)),
+              titleLarge: TextStyle(color: Colors.white),
+            ),
+            cardTheme: CardTheme(
+              color: const Color(0xFF2C2C2C),
+            ),
+            appBarTheme: AppBarTheme(
+              backgroundColor: Colors.transparent,
+              titleTextStyle: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold),
+              iconTheme: IconThemeData(color: Colors.white),
+            ),
+          ),
+          themeMode: themeController.themeMode,
+          initialRoute: '/',
+          routes: {
+            '/': (context) => const SplashScreen(),
+            '/login': (context) => const LoginPage(),
+            '/register': (context) => const RegisterPage(),
+            '/home': (context) => const HomePage(),
+            '/medicamentos': (context) => const MedicamentosScreen(),
+            '/add_medicamento': (context) => const AnadirMedicamentoScreen(),
+            '/historial': (context) => const HistorialScreen(),
+            '/perfil': (context) => const PerfilScreen(),
+            '/assistant': (context) => const AIAssistantScreen(),
+          },
+        );
       },
     );
   }
