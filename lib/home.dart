@@ -12,20 +12,11 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  bool _isLoading = true;
-  bool _showChatBot =
-      false; // Variable para controlar la visibilidad del chatbot
-
-  // Variables para el resumen de medicamentos
+  bool _isLoading = true; // Variables para el resumen de medicamentos
   int _medicamentosHoy = 0;
   int _medicamentosTomados = 0;
   int _medicamentosPendientes = 0;
   Map<String, dynamic>? _proximoMedicamento;
-
-  // Variables para el chatbot
-  final TextEditingController _chatController = TextEditingController();
-  final List<ChatMessage> _messages = [];
-  bool _isTyping = false;
 
   @override
   void initState() {
@@ -39,7 +30,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void dispose() {
-    _chatController.dispose();
     super.dispose();
   }
 
@@ -76,36 +66,20 @@ class _HomePageState extends State<HomePage> {
       final userId = supabase.auth.currentUser?.id;
       if (userId == null) {
         return;
-      }
-
-      // 1. Obtener la fecha de hoy para filtrar medicamentos
+      } // 1. Obtener la fecha de hoy para filtrar medicamentos
       final fechaHoy = DateFormat('yyyy-MM-dd').format(DateTime.now());
 
-      // 2. Obtener el día de la semana actual (1-7, donde 1 es lunes)
-      final diaSemanaActual = DateTime.now().weekday;
-
-      // 3. Cargar medicamentos del usuario actual
+      // 2. Cargar medicamentos del usuario actual
       final medicamentos = await supabase
           .from('medicamentos')
           .select('*, id')
           .eq('usuario_id', userId)
           .order('hora', ascending: true);
 
-      // 4. Filtrar medicamentos para el día actual según el día de la semana
+      // 3. Filtrar medicamentos para el día actual (sólo basado en la duración)
       final medicamentosHoy = medicamentos.where((med) {
-        // Verificar si este medicamento está programado para el día actual
-        bool estaProgramadoParaHoy = false;
-
-        // Verificar si tiene días específicos configurados
-        if (med['dias'] != null) {
-          // Obtener los días configurados para este medicamento
-          List<dynamic> diasMedicamento = med['dias'];
-          // Verificar si el día actual está en la lista de días configurados
-          estaProgramadoParaHoy = diasMedicamento.contains(diaSemanaActual);
-        } else {
-          // Si no tiene días específicos, mostrarlo todos los días (comportamiento por defecto)
-          estaProgramadoParaHoy = true;
-        }
+        // Ya no filtramos por día de la semana, todos los medicamentos se muestran diariamente
+        // si están dentro del período de tratamiento
 
         // Verificar duración del tratamiento
         bool estaEnPeriodoTratamiento = true;
@@ -119,7 +93,7 @@ class _HomePageState extends State<HomePage> {
         }
 
         // El medicamento debe estar programado para hoy Y dentro del periodo de tratamiento
-        return estaProgramadoParaHoy && estaEnPeriodoTratamiento;
+        return estaEnPeriodoTratamiento;
       }).toList();
 
       // 5. Cargar historial de hoy para saber qué medicamentos ya se tomaron
@@ -702,69 +676,5 @@ class _HomePageState extends State<HomePage> {
     if (text.isEmpty) return '';
     return text[0].toUpperCase() + text.substring(1);
   }
-
-  // Widget para el chatbot
-  Widget _buildChatBot() {
-    return Container(
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black26,
-            blurRadius: 8,
-            offset: Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              itemCount: _messages.length,
-              itemBuilder: (context, index) {
-                final message = _messages[index];
-                return ListTile(
-                  title: Text(message.text),
-                  subtitle: Text(message.sender),
-                );
-              },
-            ),
-          ),
-          Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: _chatController,
-                  decoration: InputDecoration(
-                    hintText: 'Escribe tu mensaje...',
-                  ),
-                ),
-              ),
-              IconButton(
-                icon: Icon(Icons.send),
-                onPressed: () {
-                  setState(() {
-                    _messages.add(ChatMessage(
-                      text: _chatController.text,
-                      sender: 'Usuario',
-                    ));
-                    _chatController.clear();
-                  });
-                },
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class ChatMessage {
-  final String text;
-  final String sender;
-
-  ChatMessage({required this.text, required this.sender});
+  // Fin de la clase
 }

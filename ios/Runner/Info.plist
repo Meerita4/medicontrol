@@ -40,10 +40,13 @@
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
-	</array>
-	<key>CADisableMinimumFrameDurationOnPhone</key>
+	</array>	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSCalendarsUsageDescription</key>
+	<string>La aplicación necesita acceso al calendario para programar recordatorios de toma de medicamentos.</string>
+	<key>NSUserNotificationsUsageDescription</key>
+	<string>La aplicación necesita enviar notificaciones para recordarle cuándo debe tomar sus medicamentos.</string>
 </dict>
 </plist>

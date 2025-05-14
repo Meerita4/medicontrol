@@ -11,6 +11,8 @@ import 'package:medicontrol/perfil.dart';
 import 'package:medicontrol/register.dart';
 import 'package:medicontrol/ai_assistant.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'notification_service_fixed.dart';
+import 'test_notification.dart';
 
 // Controlador de tema global
 class ThemeController with ChangeNotifier {
@@ -42,6 +44,11 @@ final themeController = ThemeController();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize notification service
+  final NotificationService notificationService = NotificationService();
+  await notificationService.init();
+  print("Notification service initialized");
 
   // Load environment variables from .env file
   await dotenv.load();
@@ -150,6 +157,7 @@ class MyApp extends StatelessWidget {
             '/historial': (context) => const HistorialScreen(),
             '/perfil': (context) => const PerfilScreen(),
             '/assistant': (context) => const AIAssistantScreen(),
+            '/test_notification': (context) => const TestNotificationScreen(),
           },
         );
       },
