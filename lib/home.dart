@@ -249,8 +249,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
               ),
-      ),
-      // Botón flotante para acceder al asistente virtual
+      ), // Botón flotante para acceder al asistente virtual
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => Navigator.of(context).pushNamed('/assistant'),
         backgroundColor: primaryColor,
@@ -552,7 +551,6 @@ class _HomePageState extends State<HomePage> {
       ],
     );
   }
-
   // Widget para el grid de accesos rápidos
   Widget _buildQuickAccessGrid(
       bool isTablet, bool isDarkMode, Color primaryColor) {
@@ -569,6 +567,12 @@ class _HomePageState extends State<HomePage> {
         'icon': Icons.add_circle_outline,
         'color': Colors.green,
         'route': '/add_medicamento',
+      },
+      {
+        'title': 'Escanear receta',
+        'icon': Icons.document_scanner,
+        'color': Colors.red,
+        'route': '/scan_prescriptions',
       },
       {
         'title': 'Historial',

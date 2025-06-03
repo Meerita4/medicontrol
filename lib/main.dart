@@ -10,9 +10,9 @@ import 'package:medicontrol/historial.dart';
 import 'package:medicontrol/perfil.dart';
 import 'package:medicontrol/register.dart';
 import 'package:medicontrol/ai_assistant.dart';
+import 'package:medicontrol/scan_prescriptions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'notification_service_fixed.dart';
-import 'test_notification.dart';
 
 // Controlador de tema global
 class ThemeController with ChangeNotifier {
@@ -157,7 +157,15 @@ class MyApp extends StatelessWidget {
             '/historial': (context) => const HistorialScreen(),
             '/perfil': (context) => const PerfilScreen(),
             '/assistant': (context) => const AIAssistantScreen(),
-            '/test_notification': (context) => const TestNotificationScreen(),
+            '/scan_prescriptions': (context) => const ScanPrescriptionsScreen(),
+          },
+          // Add responsive builder to maintain consistent text scaling
+          builder: (context, child) {
+            return MediaQuery(
+              // Ensure consistent text scaling regardless of device settings
+              data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+              child: child!,
+            );
           },
         );
       },

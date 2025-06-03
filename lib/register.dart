@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:medicontrol/main.dart'; // Para acceder a la instancia de supabase
+import 'package:medicontrol/utils/responsive_utils.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -86,9 +87,28 @@ class _RegisterPageState extends State<RegisterPage> {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final primaryColor = Theme.of(context).colorScheme.primary;
 
-    // Para diseño adaptativo
-    final screenWidth = MediaQuery.of(context).size.width;
-    final isWideScreen = screenWidth > 600;
+    // Responsive settings
+    final isTablet = ResponsiveUtils.isTablet(context);
+    final isDesktop = ResponsiveUtils.isDesktop(context);
+
+    // Calculate responsive values
+    final logoSize = ResponsiveUtils.getAdaptiveSize(
+      context,
+      mobile: 100,
+      tablet: 120,
+      desktop: 140,
+    );
+
+    final titleSize = ResponsiveUtils.getAdaptiveSize(context,
+        mobile: 26, tablet: 30, desktop: 34);
+
+    final subtitleSize = ResponsiveUtils.getAdaptiveSize(context,
+        mobile: 15, tablet: 16, desktop: 18);
+    final maxFormWidth = isDesktop
+        ? 550.0
+        : isTablet
+            ? 500.0
+            : double.infinity;
 
     return Scaffold(
       body: Container(
@@ -109,11 +129,16 @@ class _RegisterPageState extends State<RegisterPage> {
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                padding: ResponsiveUtils.getAdaptivePadding(
+                  context,
+                  mobile: const EdgeInsets.symmetric(horizontal: 24.0),
+                  tablet: const EdgeInsets.symmetric(horizontal: 40.0),
+                  desktop: const EdgeInsets.symmetric(horizontal: 60.0),
+                ),
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 300),
                   constraints: BoxConstraints(
-                    maxWidth: isWideScreen ? 500 : double.infinity,
+                    maxWidth: maxFormWidth,
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -121,33 +146,37 @@ class _RegisterPageState extends State<RegisterPage> {
                     children: [
                       // Logo y título
                       Hero(
-                        tag: 'logo',
+                        tag: 'register_logo',
                         child: Center(
                           child: Image.asset(
                             'lib/imagenes/logo.png',
-                            height: 100,
-                            width: 100,
+                            height: logoSize,
+                            width: logoSize,
                           ),
                         ),
                       ),
-                      const SizedBox(height: 20),
+                      SizedBox(
+                          height: ResponsiveUtils.getAdaptiveSize(context,
+                              mobile: 20, tablet: 24, desktop: 28)),
                       // Título
-                      const Center(
+                      Center(
                         child: Text(
                           'Crear cuenta',
                           style: TextStyle(
-                            fontSize: 28,
+                            fontSize: titleSize,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      SizedBox(
+                          height: ResponsiveUtils.getAdaptiveSize(context,
+                              mobile: 8, tablet: 10, desktop: 12)),
                       // Subtítulo
                       Center(
                         child: Text(
                           'Únete a MediControl para gestionar tus medicamentos',
                           style: TextStyle(
-                            fontSize: 16,
+                            fontSize: subtitleSize,
                             color: isDarkMode
                                 ? Colors.grey.shade300
                                 : Colors.grey.shade700,
@@ -155,7 +184,9 @@ class _RegisterPageState extends State<RegisterPage> {
                           textAlign: TextAlign.center,
                         ),
                       ),
-                      const SizedBox(height: 30),
+                      SizedBox(
+                          height: ResponsiveUtils.getAdaptiveSize(context,
+                              mobile: 30, tablet: 36, desktop: 42)),
 
                       // Tarjeta del formulario de registro
                       Card(
@@ -168,7 +199,12 @@ class _RegisterPageState extends State<RegisterPage> {
                             ? Color.fromARGB(255, 40, 40, 50)
                             : Colors.white,
                         child: Padding(
-                          padding: const EdgeInsets.all(24.0),
+                          padding: ResponsiveUtils.getAdaptivePadding(
+                            context,
+                            mobile: const EdgeInsets.all(24.0),
+                            tablet: const EdgeInsets.all(32.0),
+                            desktop: const EdgeInsets.all(36.0),
+                          ),
                           child: Form(
                             key: _formKey,
                             child: Column(
@@ -187,7 +223,12 @@ class _RegisterPageState extends State<RegisterPage> {
                                   },
                                   isDarkMode: isDarkMode,
                                 ),
-                                const SizedBox(height: 16),
+                                SizedBox(
+                                    height: ResponsiveUtils.getAdaptiveSize(
+                                        context,
+                                        mobile: 16,
+                                        tablet: 18,
+                                        desktop: 20)),
 
                                 // Campo de correo electrónico
                                 _buildTextField(
@@ -207,7 +248,12 @@ class _RegisterPageState extends State<RegisterPage> {
                                   },
                                   isDarkMode: isDarkMode,
                                 ),
-                                const SizedBox(height: 16),
+                                SizedBox(
+                                    height: ResponsiveUtils.getAdaptiveSize(
+                                        context,
+                                        mobile: 16,
+                                        tablet: 18,
+                                        desktop: 20)),
 
                                 // Campo de contraseña
                                 _buildTextField(
@@ -241,7 +287,12 @@ class _RegisterPageState extends State<RegisterPage> {
                                   },
                                   isDarkMode: isDarkMode,
                                 ),
-                                const SizedBox(height: 16),
+                                SizedBox(
+                                    height: ResponsiveUtils.getAdaptiveSize(
+                                        context,
+                                        mobile: 16,
+                                        tablet: 18,
+                                        desktop: 20)),
 
                                 // Campo de confirmación de contraseña
                                 _buildTextField(
@@ -354,16 +405,21 @@ class _RegisterPageState extends State<RegisterPage> {
                                   ],
                                 ),
 
-                                const SizedBox(height: 24),
-
-                                // Botón de registro
+                                const SizedBox(height: 24), // Botón de registro
                                 ElevatedButton(
                                   onPressed: _isLoading ? null : _signUp,
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: primaryColor,
                                     foregroundColor: Colors.white,
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 16),
+                                    padding: ResponsiveUtils.getAdaptivePadding(
+                                      context,
+                                      mobile: const EdgeInsets.symmetric(
+                                          vertical: 16),
+                                      tablet: const EdgeInsets.symmetric(
+                                          vertical: 18),
+                                      desktop: const EdgeInsets.symmetric(
+                                          vertical: 20),
+                                    ),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(16),
                                     ),
@@ -372,8 +428,18 @@ class _RegisterPageState extends State<RegisterPage> {
                                   ),
                                   child: _isLoading
                                       ? SizedBox(
-                                          height: 20,
-                                          width: 20,
+                                          height:
+                                              ResponsiveUtils.getAdaptiveSize(
+                                                  context,
+                                                  mobile: 20,
+                                                  tablet: 22,
+                                                  desktop: 24),
+                                          width:
+                                              ResponsiveUtils.getAdaptiveSize(
+                                                  context,
+                                                  mobile: 20,
+                                                  tablet: 22,
+                                                  desktop: 24),
                                           child: CircularProgressIndicator(
                                             strokeWidth: 3,
                                             valueColor:
@@ -381,21 +447,34 @@ class _RegisterPageState extends State<RegisterPage> {
                                                     Colors.white),
                                           ),
                                         )
-                                      : const Row(
+                                      : Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.center,
                                           children: [
                                             Text(
                                               'Crear cuenta',
                                               style: TextStyle(
-                                                fontSize: 16,
+                                                fontSize: ResponsiveUtils
+                                                    .getAdaptiveSize(context,
+                                                        mobile: 16,
+                                                        tablet: 17,
+                                                        desktop: 18),
                                                 fontWeight: FontWeight.bold,
                                               ),
                                             ),
-                                            SizedBox(width: 8),
+                                            SizedBox(
+                                                width: ResponsiveUtils
+                                                    .getAdaptiveSize(context,
+                                                        mobile: 8,
+                                                        tablet: 9,
+                                                        desktop: 10)),
                                             Icon(
                                               Icons.arrow_forward,
-                                              size: 18,
+                                              size: ResponsiveUtils
+                                                  .getAdaptiveSize(context,
+                                                      mobile: 18,
+                                                      tablet: 19,
+                                                      desktop: 20),
                                             ),
                                           ],
                                         ),

@@ -36,10 +36,10 @@ class SplashScreen extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Spacer(flex: 1),
-                    // Logo de MediControl con animación sutil
+                    const Spacer(
+                        flex: 1), // Logo de MediControl con animación sutil
                     Hero(
-                      tag: 'app_logo',
+                      tag: 'splash_logo',
                       child: LayoutBuilder(
                         builder: (context, constraints) {
                           // Ajusta el tamaño de la imagen según el ancho disponible
