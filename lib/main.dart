@@ -49,15 +49,12 @@ Future<void> main() async {
   final NotificationService notificationService = NotificationService();
   await notificationService.init();
   print("Notification service initialized");
-
   // Load environment variables from .env file
   await dotenv.load();
-
-  // Initialize Supabase
+  // Initialize Supabase with persistent authentication
   await Supabase.initialize(
-      url: 'https://mwhuegkdrfqvuagrxlmb.supabase.co',
-      anonKey:
-          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im13aHVlZ2tkcmZxdnVhZ3J4bG1iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDUzOTEwMDUsImV4cCI6MjA2MDk2NzAwNX0.1V1G4ArJqcaPz_s5gh3uvDFKscGysYADIJ_fxoc7YrE');
+      url: dotenv.env['SUPABASE_URL'] ?? '',
+      anonKey: dotenv.env['SUPABASE_ANON_KEY'] ?? '');
 
   runApp(const MyApp());
 }

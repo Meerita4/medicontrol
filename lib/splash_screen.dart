@@ -1,9 +1,66 @@
 import 'package:flutter/material.dart';
 import 'package:medicontrol/login.dart';
 import 'package:medicontrol/register.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-class SplashScreen extends StatelessWidget {
+class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
+
+  @override
+  State<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Verificar si existe una sesión guardada
+    _checkSavedSession();
+  } // Método para verificar si hay una sesión guardada
+
+  Future<void> _checkSavedSession() async {
+    try {
+      // Mostrar la pantalla de splash por un breve momento
+      await Future.delayed(const Duration(seconds: 1));
+
+      if (!mounted) return;
+
+      // Verificar si ya hay una sesión activa usando la API de Supabase
+      final currentSession = Supabase.instance.client.auth.currentSession;
+      final currentUser = Supabase.instance.client.auth.currentUser;
+
+      if (currentSession != null && currentUser != null) {
+        print('Sesión activa encontrada para: ${currentUser.email}');
+
+        // Verificar si la sesión es válida intentando acceder a datos
+        try {
+          // Acceder a un dato básico para asegurar que la sesión es válida
+          await Supabase.instance.client
+              .from('medicamentos')
+              .select('id')
+              .limit(1);
+
+          print('Sesión validada correctamente');
+
+          // Si la sesión es válida, redirigir a la página principal
+          Navigator.of(context).pushReplacementNamed('/home');
+          return;
+        } catch (authError) {
+          print('Error al verificar sesión: $authError');
+          // Si hay error de autenticación, cerramos sesión para limpiar
+          await Supabase.instance.client.auth.signOut();
+        }
+      } else {
+        print('No se encontró una sesión activa');
+        // Limpiar cualquier dato de sesión residual por seguridad
+        const storage = FlutterSecureStorage();
+        await storage.delete(key: 'remember_me');
+      }
+    } catch (e) {
+      print('Error al verificar la sesión guardada: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

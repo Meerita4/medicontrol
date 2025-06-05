@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:medicontrol/main.dart';
 import 'package:medicontrol/register.dart';
 import 'package:medicontrol/utils/responsive_utils.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -55,6 +56,16 @@ class _LoginPageState extends State<LoginPage> {
 
       // Verificar el resultado de autenticación
       if (res.user != null) {
+        // Si la opción "Recordarme" está marcada, guardamos el valor para referencia
+        final storage = FlutterSecureStorage();
+        if (_rememberMe) {
+          await storage.write(key: 'remember_me', value: 'true');
+          print('Preferencia "Recordarme" guardada');
+        } else {
+          // Si no está marcado, borrar la preferencia guardada
+          await storage.delete(key: 'remember_me');
+        }
+
         // Inicio de sesión exitoso, navegar a la página principal
         Navigator.of(context).pushReplacementNamed('/home');
       } else {
